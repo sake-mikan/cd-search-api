@@ -6,15 +6,20 @@ RUN apt-get update && apt-get install -y \
     unzip \
     libzip-dev \
     libpq-dev \
-    && docker-php-ext-install zip pdo pdo_mysql pdo_pgsql
+    && docker-php-ext-install zip pdo pdo_pgsql
 
 # Composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 WORKDIR /var/www
 
+# ソースコピー
 COPY . .
 
+# 依存関係
+RUN composer install --no-dev --optimize-autoloader
+
+# 権限
 RUN chmod -R 777 storage bootstrap/cache
 
 # Composer install
@@ -22,4 +27,5 @@ RUN composer install --no-dev --optimize-autoloader
 
 EXPOSE 8000
 
-CMD php artisan serve --host=0.0.0.0 --port=8000
+# 起動時コマンド
+CMD php artisan migrate --force && php artisan serve --host=0.0.0.0 --port=10000
