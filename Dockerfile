@@ -16,9 +16,6 @@ WORKDIR /var/www
 # ソースコピー
 COPY . .
 
-# 依存関係
-RUN composer install --no-dev --optimize-autoloader
-
 # 権限
 RUN chmod -R 777 storage bootstrap/cache
 
